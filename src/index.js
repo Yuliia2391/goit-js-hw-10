@@ -10,14 +10,14 @@ const refs = {
     catInfo: document.querySelector('.cat-info'),
 }
 
-refs.error.style.display = 'none';
-refs.catInfo.style.display = 'none';
 refs.select.addEventListener('change', onSelectChange);
 
 function pageLoading() {
     fetchBreeds()
         .then(data => {
             console.log(data);
+            refs.loader.hidden = true;
+            refs.select.style.display = 'flex';
             refs.select.insertAdjacentHTML('beforeend', createMarkupSelect(data));
             new SlimSelect({
                 select: refs.select,
@@ -28,7 +28,10 @@ function pageLoading() {
         })
         .catch(err => {
             console.log(err);
-            Notiflix.Notify.failure();
+            refs.loader.hidden = true;
+            refs.select.style.display = 'none';
+            refs.error.style.display = 'flex';
+            Notiflix.Notify.failure('Error');
         });
 }
 
@@ -44,7 +47,6 @@ function createMarkupSelect(namesArr) {
 };
 
 function onSelectChange() {
-    // refs.loader.start();
     fetchCatByBreed()
         .then(data => {
             console.log(data)
@@ -52,6 +54,9 @@ function onSelectChange() {
         })
         .catch(err => {
             console.log(err);
+            refs.loader.hidden = true;
+            refs.select.style.display = 'none';
+            refs.error.style.display = 'flex';
             Notiflix.Notify.failure();
         })
         // .finally(() => refs.loader.stop());
