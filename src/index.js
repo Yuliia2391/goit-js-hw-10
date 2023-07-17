@@ -1,32 +1,41 @@
-import { fetchBreeds } from "./cat-api";
-import { fetchCatByBreed } from "./cat-api";
+import { fetchCatByBreed, fetchBreeds } from "./cat-api";
 import SlimSelect from 'slim-select'
-
-new SlimSelect({
-    select: '#single'
-})
+import 'slim-select/dist/slimselect.css'
+import Notiflix from 'notiflix';
 
 const refs = {
-    selectForm: document.querySelector('select.breed-select'),
+    select: document.querySelector('select.breed-select'),
+    loader: document.querySelector('.loader'),
+    error: document.querySelector('.error'),
     catInfo: document.querySelector('.cat-info'),
 }
 
-refs.selectForm.addEventListener('click', onClickSelectForm);
-refs.catInfo.addEventListener('click', onClickCatInfo);
+refs.error.style.display = 'none';
+refs.catInfo.style.display = 'none';
+refs.select.addEventListener('change', onSelectChange);
 
-function onClickSelectForm() {
+function pageLoading() {
     fetchBreeds()
         .then(data => {
-            console.log(data)
-            refs.selectForm.insertAdjacentHTML('beforeend', createMarkupName(data));
+            console.log(data);
+            refs.select.insertAdjacentHTML('beforeend', createMarkupSelect(data));
+            new SlimSelect({
+                select: refs.select,
+                settings: {
+                    allowDeselect: true,
+                },
+            });
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+            console.log(err);
+            Notiflix.Notify.failure();
+        });
 }
 
-let catsNameArr = [];
+pageLoading();
 
-function createMarkupName(catsNameArr) {
-    return catsNameArr.map(({ id, name }) => `
+function createMarkupSelect(namesArr) {
+    return namesArr.map(({ id, name }) => `
     <option value="${id}">
     ${name}
     </option>
@@ -34,20 +43,26 @@ function createMarkupName(catsNameArr) {
         .join('');
 };
 
-function onClickCatInfo() {
+function onSelectChange() {
+    refs.loader.start();
     fetchCatByBreed()
-    .then(data => {
-        console.log(data)
-        refs.catInfo.insertAdjacentHTML('beforeend', createMarkupDescr(data));
+        .then(data => {
+            console.log(data)
+            refs.catInfo.insertAdjacentHTML('beforeend', createMarkupCat(data));
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+            console.log(err);
+            Notiflix.Notify.failure();
+        })
+        .finally(() => refs.loader.stop());
 }
 
-let catsInfoArr = [];
+onSelectChange();
 
-function createMarkupDescr(catsInfoArr) {
-    return catsInfoArr.map(({name, description, temperament}) => `
-    <h1>${name}</h1>
+function createMarkupCat(catsArr) {
+    return catsArr.map(({ image: {url, width, height}, name, description, temperament }) => `
+    <image src='${url}' alt='${name}' ${width} ${height}/>
+    <h2>${name}</h2>
     <p>${description}</p>
     <p>${temperament}</p>
     `)
