@@ -44,7 +44,7 @@ function createMarkupSelect(namesArr) {
 };
 
 function onSelectChange() {
-    refs.loader.start();
+    // refs.loader.start();
     fetchCatByBreed()
         .then(data => {
             console.log(data)
@@ -54,7 +54,7 @@ function onSelectChange() {
             console.log(err);
             Notiflix.Notify.failure();
         })
-        .finally(() => refs.loader.stop());
+        // .finally(() => refs.loader.stop());
 }
 
 onSelectChange();
