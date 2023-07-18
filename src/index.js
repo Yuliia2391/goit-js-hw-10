@@ -2,6 +2,10 @@ import { fetchCatByBreed, fetchBreeds } from "./cat-api";
 import SlimSelect from 'slim-select'
 import 'slim-select/dist/slimselect.css'
 import Notiflix from 'notiflix';
+Notiflix.Notify.init({
+    position: 'center-center',
+    width: '300px',
+});
 
 const refs = {
     select: document.querySelector('select.breed-select'),
@@ -14,9 +18,9 @@ refs.select.addEventListener('change', onSelectChange);
 
 function pageLoading() {
     fetchBreeds()
+        
         .then(data => {
             console.log(data);
-            refs.select.style.display = 'flex';
             refs.select.insertAdjacentHTML('beforeend', createMarkupSelect(data));
             new SlimSelect({
                 select: refs.select,
@@ -25,12 +29,14 @@ function pageLoading() {
                 },
             });
         })
+
         .catch(err => {
             console.log(err);
             refs.select.style.display = 'none';
             refs.error.style.display = 'flex';
             Notiflix.Notify.failure('Error');
         })
+
         .finally(() => {
             refs.loader.hidden = true;
         });
@@ -49,33 +55,42 @@ function createMarkupSelect(namesArr) {
 
 function onSelectChange(evt) {
     fetchCatByBreed(evt.target.value)
+        
         .then(data => {
             console.log(data)
-            refs.catInfo.insertAdjacentHTML('beforeend', createMarkupCat(data));
-            // const { url } = data[0];
-            // const { name, description, temperament } = data[0].breeds[0];
-            // refs.catInfo.innerHTML = `
-            //     <img src='${url}' alt='${name}' width=400/>
-            //     <h2>${name}</h2>
-            //     <p>${description}</p>
-            //     <p>${temperament}</p>`
+            // refs.catInfo.insertAdjacentHTML('beforeend', createMarkupCat(data));
+            const { url } = data[0];
+            const { name, description, temperament } = data[0].breeds[0];
+            refs.catInfo.innerHTML = `
+            <div class="container">
+                <img src='${url}' alt='${name}' width=600 height=400/>
+                <div class="info-container">
+                    <h2>${name}</h2>
+                    <p>${description}</p>
+                    <p>${temperament}</p>
+                </div>
+            </div>`
         })
+
         .catch(err => {
             console.log(err);
+            refs.select.style.display = 'none';
             refs.error.style.display = 'flex';
             Notiflix.Notify.failure('Error');
         })
+        
         .finally(() => {
             refs.loader.hidden = true;
-        });
+        })
 }
 
-function createMarkupCat(catsArr) {
-    return catsArr.map(({ url, breeds: { name, description, temperament }}) => `
-    <image src='${url}' alt='${name}' width=400/>
-    <h2>${name}</h2>
-    <p>${description}</p>
-    <p>${temperament}</p>
-    `)
-        .join('');
-};
+// function createMarkupCat(catsArr) {
+//     console.log(catsArr);
+//     return catsArr.map(({ url, breeds: { name, description, temperament }}) => `
+//     <image src='${url}' alt='${name}' width=400/>
+//     <h2>${name}</h2>
+//     <p>${description}</p>
+//     <p>${temperament}</p>
+//     `)
+//         .join('');
+// };
