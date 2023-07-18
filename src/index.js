@@ -17,6 +17,8 @@ const refs = {
 refs.select.addEventListener('change', onSelectChange);
 
 function pageLoading() {
+    refs.loader.hidden = false;
+    
     fetchBreeds()
         
         .then(data => {
@@ -54,6 +56,8 @@ function createMarkupSelect(namesArr) {
 };
 
 function onSelectChange(evt) {
+    refs.loader.hidden = false;
+
     fetchCatByBreed(evt.target.value)
         
         .then(data => {
@@ -74,11 +78,11 @@ function onSelectChange(evt) {
 
         .catch(err => {
             console.log(err);
-            refs.select.style.display = 'none';
+            refs.catInfo.style.display = 'none';
             refs.error.style.display = 'flex';
             Notiflix.Notify.failure('Error');
         })
-        
+
         .finally(() => {
             refs.loader.hidden = true;
         })
