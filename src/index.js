@@ -16,7 +16,6 @@ function pageLoading() {
     fetchBreeds()
         .then(data => {
             console.log(data);
-            refs.loader.hidden = true;
             refs.select.style.display = 'flex';
             refs.select.insertAdjacentHTML('beforeend', createMarkupSelect(data));
             new SlimSelect({
@@ -28,10 +27,12 @@ function pageLoading() {
         })
         .catch(err => {
             console.log(err);
-            refs.loader.hidden = true;
             refs.select.style.display = 'none';
             refs.error.style.display = 'flex';
             Notiflix.Notify.failure('Error');
+        })
+        .finally(() => {
+            refs.loader.hidden = true;
         });
 }
 
@@ -46,27 +47,32 @@ function createMarkupSelect(namesArr) {
         .join('');
 };
 
-function onSelectChange() {
-    fetchCatByBreed()
+function onSelectChange(evt) {
+    fetchCatByBreed(evt.target.value)
         .then(data => {
             console.log(data)
             refs.catInfo.insertAdjacentHTML('beforeend', createMarkupCat(data));
+            // const { url } = data[0];
+            // const { name, description, temperament } = data[0].breeds[0];
+            // refs.catInfo.innerHTML = `
+            //     <img src='${url}' alt='${name}' width=400/>
+            //     <h2>${name}</h2>
+            //     <p>${description}</p>
+            //     <p>${temperament}</p>`
         })
         .catch(err => {
             console.log(err);
-            refs.loader.hidden = true;
-            refs.select.style.display = 'none';
             refs.error.style.display = 'flex';
-            Notiflix.Notify.failure();
+            Notiflix.Notify.failure('Error');
         })
-        // .finally(() => refs.loader.stop());
+        .finally(() => {
+            refs.loader.hidden = true;
+        });
 }
 
-onSelectChange();
-
 function createMarkupCat(catsArr) {
-    return catsArr.map(({ image: {url, width, height}, name, description, temperament }) => `
-    <image src='${url}' alt='${name}' ${width} ${height}/>
+    return catsArr.map(({ url, breeds: { name, description, temperament }}) => `
+    <image src='${url}' alt='${name}' width=400/>
     <h2>${name}</h2>
     <p>${description}</p>
     <p>${temperament}</p>
