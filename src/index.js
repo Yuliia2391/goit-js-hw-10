@@ -15,6 +15,8 @@ const refs = {
 }
 
 refs.select.addEventListener('change', onSelectChange);
+refs.select.hidden = true;
+refs.error.hidden = true;
 
 function pageLoading() {
     refs.loader.hidden = false;
@@ -26,16 +28,11 @@ function pageLoading() {
             refs.select.insertAdjacentHTML('beforeend', createMarkupSelect(data));
             new SlimSelect({
                 select: refs.select,
-                settings: {
-                    allowDeselect: true,
-                },
             });
         })
 
         .catch(err => {
             console.log(err);
-            refs.select.style.display = 'none';
-            refs.error.style.display = 'flex';
             Notiflix.Notify.failure('Error');
         })
 
@@ -57,6 +54,8 @@ function createMarkupSelect(namesArr) {
 
 function onSelectChange(evt) {
     refs.loader.hidden = false;
+    refs.error.hidden = true;
+    refs.catInfo.hidden = false;
 
     fetchCatByBreed(evt.target.value)
         
@@ -78,8 +77,8 @@ function onSelectChange(evt) {
 
         .catch(err => {
             console.log(err);
-            refs.catInfo.style.display = 'none';
-            refs.error.style.display = 'flex';
+            refs.error.hidden = false;
+            refs.catInfo.hidden = true;
             Notiflix.Notify.failure('Error');
         })
 
