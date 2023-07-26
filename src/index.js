@@ -84,14 +84,3 @@ function onSelectChange(evt) {
             refs.loader.hidden = true;
         })
 }
-
-// function createMarkupCat(catsArr) {
-//     console.log(catsArr);
-//     return catsArr.map(({ url, breeds: { name, description, temperament }}) => `
-//     <image src='${url}' alt='${name}' width=400/>
-//     <h2>${name}</h2>
-//     <p>${description}</p>
-//     <p>${temperament}</p>
-//     `)
-//         .join('');
-// };
